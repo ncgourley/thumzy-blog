@@ -6,24 +6,25 @@
 <title>Skynat Dev Log</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #08090d;
-    --surface: #0f1118;
-    --surface-hover: #151825;
-    --border: #1e2233;
-    --text: #b8c0d0;
-    --text-bright: #e2e8f0;
-    --muted: #5a6480;
-    --accent: #6ee7b7;
-    --accent-dim: #34d399;
-    --accent-glow: rgba(110, 231, 183, 0.08);
-    --blue: #60a5fa;
-    --amber: #fbbf24;
-    --red: #f87171;
-    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface-hover: #1a2236;
+    --border: #1e2a42;
+    --text: #b0bdd0;
+    --text-bright: #d4dce8;
+    --muted: #5c6b87;
+    --accent: #c4a46c;
+    --accent-dim: #a8894e;
+    --accent-glow: rgba(196, 164, 108, 0.07);
+    --blue: #6b8db5;
+    --amber: #c4a46c;
+    --red: #c47070;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
     --sans: 'Inter', -apple-system, sans-serif;
+    --serif: 'Lora', Georgia, 'Times New Roman', serif;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -33,15 +34,14 @@
     line-height: 1.7;
     min-height: 100vh;
   }
-  /* Subtle grid background */
+  /* Subtle noise texture */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(110,231,183,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(110,231,183,0.02) 1px, transparent 1px);
-    background-size: 60px 60px;
+      radial-gradient(ellipse at 20% 50%, rgba(196,164,108,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(107,141,181,0.03) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
   }
@@ -108,14 +108,14 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 3px;
+    width: 2px;
     height: 100%;
-    background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
-    opacity: 0.6;
+    background: linear-gradient(180deg, var(--accent) 0%, transparent 80%);
+    opacity: 0.4;
   }
   .post:hover {
-    border-color: rgba(110,231,183,0.2);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    border-color: rgba(196,164,108,0.2);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
   }
   .post h2 {
     font-family: var(--sans);
@@ -144,27 +144,29 @@
   .post .stat {
     font-family: var(--mono);
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 500;
     padding: 0.25rem 0.65rem;
     border-radius: 100px;
-    background: rgba(110,231,183,0.06);
-    border: 1px solid rgba(110,231,183,0.15);
+    background: rgba(196,164,108,0.06);
+    border: 1px solid rgba(196,164,108,0.18);
     color: var(--accent-dim);
     letter-spacing: 0.01em;
   }
   .post .stat.green {
-    background: rgba(52,211,153,0.08);
-    border-color: rgba(52,211,153,0.25);
-    color: #6ee7b7;
+    background: rgba(107,141,181,0.08);
+    border-color: rgba(107,141,181,0.25);
+    color: var(--blue);
   }
   .post .stat.red {
-    background: rgba(248,113,113,0.08);
-    border-color: rgba(248,113,113,0.25);
+    background: rgba(196,112,112,0.08);
+    border-color: rgba(196,112,112,0.25);
     color: var(--red);
   }
   .post p {
+    font-family: var(--serif);
     margin-bottom: 0.85rem;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.005em;
   }
   .post ul {
     margin-left: 1.2rem;
@@ -172,10 +174,11 @@
     list-style: none;
   }
   .post li {
+    font-family: var(--serif);
     position: relative;
     padding-left: 0.8rem;
     margin-bottom: 0.4rem;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
   }
   .post li::before {
     content: '';
@@ -188,13 +191,13 @@
     border-radius: 50%;
   }
   .post h3 {
-    font-family: var(--mono);
-    color: var(--accent-dim);
-    font-size: 0.88rem;
+    font-family: var(--serif);
+    color: var(--accent);
+    font-size: 0.95rem;
     font-weight: 600;
+    font-style: italic;
     margin: 1.4rem 0 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.01em;
   }
   .post code {
     font-family: var(--mono);
