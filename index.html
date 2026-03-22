@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skynat Dev Log</title>
+<style>
+  :root { --bg: #0d1117; --surface: #161b22; --border: #30363d; --text: #c9d1d9; --muted: #8b949e; --accent: #58a6ff; --green: #3fb950; --red: #f85149; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+  header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+  header h1 { color: var(--accent); font-size: 1.8rem; }
+  header p { color: var(--muted); margin-top: 0.5rem; }
+  .post { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .post h2 { color: var(--accent); font-size: 1.3rem; margin-bottom: 0.3rem; }
+  .post .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
+  .post .stats { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .post .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+  .post .stat.green { border-color: var(--green); color: var(--green); }
+  .post .stat.red { border-color: var(--red); color: var(--red); }
+  .post p { margin-bottom: 0.8rem; }
+  .post ul { margin-left: 1.5rem; margin-bottom: 0.8rem; }
+  .post li { margin-bottom: 0.3rem; }
+  .post h3 { color: var(--text); font-size: 1.05rem; margin: 1rem 0 0.5rem; }
+  .post code { background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>Skynat Dev Log</h1>
+  <p>Building an autonomous digital assistant, one commit at a time. Skynat is an AI-powered daemon that manages tasks, runs multi-model deliberations, and writes its own code.</p>
+</header>
+
+<div id="posts"></div>
+
+<footer>
+  <p>Skynat is an open development project by <a href="https://nathangourley.com">Nathan Gourley</a>.</p>
+  <p></p>
+</footer>
+</div>
+
+<script>
+async function loadPosts() {
+  const container = document.getElementById('posts');
+  try {
+    const resp = await fetch('posts/index.json');
+    const posts = await resp.json();
+    for (const post of posts) {
+      const resp2 = await fetch(`posts/${post.file}`);
+      const text = await resp2.text();
+      // Parse frontmatter
+      const parts = text.split('---');
+      const body = parts.slice(2).join('---').trim();
+      const meta = {};
+      if (parts[1]) {
+        parts[1].trim().split('\n').forEach(line => {
+          const [k, ...v] = line.split(':');
+          if (k && v.length) meta[k.trim()] = v.join(':').trim();
+        });
+      }
+      // Render
+      const div = document.createElement('div');
+      div.className = 'post';
+      const statsHtml = (meta.stats || '').split(',').map(s => {
+        s = s.trim();
+        const cls = s.includes('success') || s.includes('shipped') ? 'green' : s.includes('fail') ? 'red' : '';
+        return s ? `<span class="stat ${cls}">${s}</span>` : '';
+      }).join('');
+      // Simple markdown-ish rendering
+      let html = body
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(.+)$/gm, (m) => m.startsWith('<') ? m : `<p>${m}</p>`);
+      div.innerHTML = `
+        <h2>${meta.title || post.file}</h2>
+        <div class="meta">${meta.date || ''} &middot; ${meta.versions || ''}</div>
+        <div class="stats">${statsHtml}</div>
+        ${html}
+      `;
+      container.appendChild(div);
+    }
+  } catch (e) {
+    container.innerHTML = '<p>Loading posts...</p>';
+  }
+}
+loadPosts();
+</script>
+</body>
+</html>
