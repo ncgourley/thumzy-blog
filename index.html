@@ -4,43 +4,241 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Skynat Dev Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #0d1117; --surface: #161b22; --border: #30363d; --text: #c9d1d9; --muted: #8b949e; --accent: #58a6ff; --green: #3fb950; --red: #f85149; }
+  :root {
+    --bg: #08090d;
+    --surface: #0f1118;
+    --surface-hover: #151825;
+    --border: #1e2233;
+    --text: #b8c0d0;
+    --text-bright: #e2e8f0;
+    --muted: #5a6480;
+    --accent: #6ee7b7;
+    --accent-dim: #34d399;
+    --accent-glow: rgba(110, 231, 183, 0.08);
+    --blue: #60a5fa;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-  .container { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
-  header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-  header h1 { color: var(--accent); font-size: 1.8rem; }
-  header p { color: var(--muted); margin-top: 0.5rem; }
-  .post { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-  .post h2 { color: var(--accent); font-size: 1.3rem; margin-bottom: 0.3rem; }
-  .post .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem; }
-  .post .stats { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  .post .stat { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.6rem; font-size: 0.8rem; }
-  .post .stat.green { border-color: var(--green); color: var(--green); }
-  .post .stat.red { border-color: var(--red); color: var(--red); }
-  .post p { margin-bottom: 0.8rem; }
-  .post ul { margin-left: 1.5rem; margin-bottom: 0.8rem; }
-  .post li { margin-bottom: 0.3rem; }
-  .post h3 { color: var(--text); font-size: 1.05rem; margin: 1rem 0 0.5rem; }
-  .post code { background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(110,231,183,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(110,231,183,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+  /* Header */
+  header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 120px;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .logo {
+    font-family: var(--mono);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .logo .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1.8rem;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .tagline {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 0.6rem;
+    max-width: 540px;
+  }
+  .tagline strong { color: var(--text); font-weight: 500; }
+
+  /* Posts */
+  .post {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .post::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+    opacity: 0.6;
+  }
+  .post:hover {
+    border-color: rgba(110,231,183,0.2);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+  .post h2 {
+    font-family: var(--sans);
+    color: var(--text-bright);
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+  .post .meta {
+    font-family: var(--mono);
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .post .meta span { display: flex; align-items: center; gap: 0.3rem; }
+  .post .stats {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+  }
+  .post .stat {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 100px;
+    background: rgba(110,231,183,0.06);
+    border: 1px solid rgba(110,231,183,0.15);
+    color: var(--accent-dim);
+    letter-spacing: 0.01em;
+  }
+  .post .stat.green {
+    background: rgba(52,211,153,0.08);
+    border-color: rgba(52,211,153,0.25);
+    color: #6ee7b7;
+  }
+  .post .stat.red {
+    background: rgba(248,113,113,0.08);
+    border-color: rgba(248,113,113,0.25);
+    color: var(--red);
+  }
+  .post p {
+    margin-bottom: 0.85rem;
+    font-size: 0.92rem;
+  }
+  .post ul {
+    margin-left: 1.2rem;
+    margin-bottom: 0.85rem;
+    list-style: none;
+  }
+  .post li {
+    position: relative;
+    padding-left: 0.8rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.92rem;
+  }
+  .post li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .post h3 {
+    font-family: var(--mono);
+    color: var(--accent-dim);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin: 1.4rem 0 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .post code {
+    font-family: var(--mono);
+    background: rgba(110,231,183,0.06);
+    border: 1px solid rgba(110,231,183,0.1);
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.82em;
+    color: var(--accent);
+  }
+  .post strong { color: var(--text-bright); font-weight: 600; }
+
+  a { color: var(--accent); text-decoration: none; transition: opacity 0.2s; }
+  a:hover { opacity: 0.8; }
+
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .container { padding: 1.5rem 1rem; }
+    .logo { font-size: 1.6rem; }
+    .post { padding: 1.2rem; }
+    .post h2 { font-size: 1.15rem; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
 <header>
-  <h1>Skynat Dev Log</h1>
-  <p>Building an autonomous digital assistant, one commit at a time. Skynat is an AI-powered daemon that manages tasks, runs multi-model deliberations, and writes its own code.</p>
+  <div class="logo">skynat<span class="cursor"></span></div>
+  <p class="tagline">Building an <strong>autonomous digital assistant</strong>, one commit at a time. An AI-powered daemon that manages tasks, runs multi-model deliberations, and writes its own code.</p>
 </header>
 
 <div id="posts"></div>
 
 <footer>
-  <p>Skynat is an open development project by <a href="https://nathangourley.com">Nathan Gourley</a>.</p>
-  <p></p>
+  <p>An open development project by <a href="https://nathangourley.com">Nathan Gourley</a></p>
 </footer>
 </div>
 
@@ -53,7 +251,6 @@ async function loadPosts() {
     for (const post of posts) {
       const resp2 = await fetch(`posts/${post.file}`);
       const text = await resp2.text();
-      // Parse frontmatter
       const parts = text.split('---');
       const body = parts.slice(2).join('---').trim();
       const meta = {};
@@ -63,15 +260,13 @@ async function loadPosts() {
           if (k && v.length) meta[k.trim()] = v.join(':').trim();
         });
       }
-      // Render
       const div = document.createElement('div');
       div.className = 'post';
       const statsHtml = (meta.stats || '').split(',').map(s => {
         s = s.trim();
-        const cls = s.includes('success') || s.includes('shipped') ? 'green' : s.includes('fail') ? 'red' : '';
+        const cls = s.includes('success') || s.includes('shipped') || s.includes('achieved') ? 'green' : s.includes('fail') || s.includes('disaster') ? 'red' : '';
         return s ? `<span class="stat ${cls}">${s}</span>` : '';
       }).join('');
-      // Simple markdown-ish rendering
       let html = body
         .replace(/^### (.+)$/gm, '<h3>$1</h3>')
         .replace(/^- (.+)$/gm, '<li>$1</li>')
@@ -79,17 +274,20 @@ async function loadPosts() {
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/\n\n/g, '</p><p>')
-        .replace(/^(.+)$/gm, (m) => m.startsWith('<') ? m : `<p>${m}</p>`);
+        .replace(/^(?!<)(.*\S.*)$/gm, (m) => m.startsWith('<') ? m : `<p>${m}</p>`);
       div.innerHTML = `
         <h2>${meta.title || post.file}</h2>
-        <div class="meta">${meta.date || ''} &middot; ${meta.versions || ''}</div>
+        <div class="meta">
+          <span>${meta.date || ''}</span>
+          <span>${meta.versions || ''}</span>
+        </div>
         <div class="stats">${statsHtml}</div>
         ${html}
       `;
       container.appendChild(div);
     }
   } catch (e) {
-    container.innerHTML = '<p>Loading posts...</p>';
+    container.innerHTML = '<p style="color:var(--muted)">Loading transmission...</p>';
   }
 }
 loadPosts();
